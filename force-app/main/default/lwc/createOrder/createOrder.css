@@ -1,0 +1,143 @@
+.parentClass {
+    padding: 20px;
+}
+
+.mainClass {
+    height: 77vh;
+    position: relative;
+}
+
+.centerRightButton {
+    display: flex;
+    justify-content: right;
+    align-content: center;
+    position: relative;
+}
+
+.orderBadge {
+    margin: -12px -12px 0 0;
+    z-index: 20;
+}
+
+.comboBox {
+    padding-left: 10px;
+}
+
+.cardPadding {
+    padding-top: 10px;
+}
+
+.noDataText {
+    height: 62vh;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+.textContent {
+    margin: auto;
+}
+
+.cancelButton {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+.centerCancel {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+}
+
+:host .customCardClass {
+    --slds-c-card-header-spacing-block-end: 0px;
+    --slds-c-card-header-spacing-block-start: 0px;
+
+    --slds-c-card-body-spacing-block-start: 0px;
+    --slds-c-card-body-spacing-block-end: 0px;
+}
+
+:host .parentClass,
+:host .tableEditor {
+    --slds-c-button-text-destructive-color-border: #ea001e;
+}
+
+.tableClass {
+    max-height: 65vh;
+    min-height: 65vh;
+    position: relative;
+}
+
+.tableFixHead {
+    overflow: auto;
+    height: 62vh;
+}
+
+.tableFixHead table {
+    border-collapse: inherit;
+    width: 100%;
+}
+
+.tableFixHead th {
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 2;
+    color: black;
+    height: 30px;
+}
+
+.tableFixHead td {
+    background: #f9f9f9;
+}
+
+.tableClass {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.orderPanel {
+    margin: 20px;
+}
+.orderPanel th, td {
+    background-color: white;
+}
+
+.tableClass {
+    max-height: 65vh;
+    min-height: 65vh;
+    position: relative;
+}
+
+.modalTableFixed {
+    overflow: auto;
+    height: 50vh;
+}
+
+.modalTableFixed table {
+    border-collapse: inherit;
+    width: 100%;
+}
+
+.modalTableFixed th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: black;
+    height: 50px;
+}
+
+hr {
+    padding: 0;
+    margin: 0;
+}
+
+.rightPanel {
+    height: 50vh;
+    padding: 20px;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+}
