@@ -130,8 +130,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
     addProduct(event) {
         if (this.recordId == null || this.recordId == '') {
             event = new ShowToastEvent({
-                title: 'System Error!',
-                message: 'Please, create an Order first.',
+                title: 'Please, create an Order first!',
                 variant: 'Error',
                 mode: 'dismissable'
             });
@@ -139,12 +138,6 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         } else if (this.desiredQuantity < 0) {
             alert('Please enter a valid value');
         } else {
-            // Cart Badge
-            this.productCount++;
-            if (this.productCount !== 0) {
-                this.buttonDisable = false;
-                this.showBadge = true;
-            }
             this.selectedItems = false;
             var pId = event.target.value;
             var index = -1;
@@ -168,18 +161,17 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
             if (!this.selectedProductsList.some(prod => prod.Id === selectedProduct.Id)) {
                 this.selectedProductsList.push(selectedProduct);
             }
+            // Cart Badge
+            this.productCount = this.selectedProductsList.length;
+            if (this.productCount !== 0) {
+                this.buttonDisable = false;
+                this.showBadge = true;
+            }
             this.selectedItems = true;
         }
     }
 
     removeProduct(event) {
-        // Cart Badge
-        this.productCount--;
-        if (this.productCount === 0) {
-            this.buttonDisable = true;
-            this.showBadge = false;
-        }
-
         var id = event.target.value;
         for (var product of this.selectedProductsList) {
             if (id == product.Id) {
@@ -190,16 +182,27 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         this.selectedItems = false;
         this.selectedItems = true;
 
-        this.productAmount = 0;
-        this.productQuantity = 0;
-        this.productSub = 0;
-        for (var product of this.selectedProductsList) {
-            this.productAmount = Number.parseInt(this.productAmount) + ((product.ListPrice - (product.ListPrice * product.Discount / 100)) * product.Quantity);
-            this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
-            this.productSub = Number.parseInt(this.productSub) + (product.ListPrice * product.Quantity);
+        // Cart Badge
+        this.productCount = this.selectedProductsList.length;
+        if (this.productCount === 0) {
+            this.buttonDisable = true;
+            this.showBadge = false;
 
-            this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            this.orderTsub = this.productSub.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            this.productQuantity = 0;
+            this.orderAmnt = '0';
+            this.orderTsub = '0';
+        } else {
+            this.productAmount = 0;
+            this.productQuantity = 0;
+            this.productSub = 0;
+            for (var product of this.selectedProductsList) {
+                this.productAmount = Number.parseInt(this.productAmount) + ((product.ListPrice - (product.ListPrice * product.Discount / 100)) * product.Quantity);
+                this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
+                this.productSub = Number.parseInt(this.productSub) + (product.ListPrice * product.Quantity);
+
+                this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                this.orderTsub = this.productSub.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
         }
     }
 
