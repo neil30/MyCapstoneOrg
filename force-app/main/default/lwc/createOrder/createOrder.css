@@ -102,7 +102,9 @@
 .orderPanel {
     margin: 20px;
 }
-.orderPanel th, td {
+
+.orderPanel th,
+td {
     background-color: white;
 }
 

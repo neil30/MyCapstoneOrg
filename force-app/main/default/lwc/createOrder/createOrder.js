@@ -3,9 +3,8 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 import getRecordId from '@salesforce/apex/OrderController.getRecordId';
 import getProducts from '@salesforce/apex/OrderController.getProducts';
-import getItems from '@salesforce/apex/OrderController.getProdDetails';
-import getOrd from '@salesforce/apex/OrderController.getOrdDetails';
 import createOrderProducts from '@salesforce/apex/OrderController.createOrderProducts';
+import LightningConfirm from 'lightning/confirm';
 
 const columns = [
     { label: 'Order Id', fieldname: 'Id', type: 'text' },
@@ -150,14 +149,17 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     selectedProduct.ProductCode = product.ProductCode;
                     selectedProduct.Brand__c = product.Brand__c;
                     selectedProduct.Stock_Quantity__c = product.Stock_Quantity__c;
-                    selectedProduct.Quantity = 0;
+                    selectedProduct.Quantity = 1;
                     selectedProduct.UnitPrice = 0;
                     selectedProduct.ListPrice = product.ListPrice;
                     selectedProduct.Discount = 0;
                     selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
+
+                    this.productAmount = Number.parseInt(this.productAmount) + Number.parseInt(product.ListPrice);
                     break;
                 }
             }
+            this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             if (!this.selectedProductsList.some(prod => prod.Id === selectedProduct.Id)) {
                 this.selectedProductsList.push(selectedProduct);
             }
@@ -171,37 +173,49 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
-    removeProduct(event) {
-        var id = event.target.value;
-        for (var product of this.selectedProductsList) {
-            if (id == product.Id) {
-                const index = this.selectedProductsList.indexOf(product);
-                this.selectedProductsList.splice(index, 1)
-            }
-        }
-        this.selectedItems = false;
-        this.selectedItems = true;
+    async removeProduct(event) {
+        var id = [];
+        id.push(event.target.value)
+        console.log(id[0]);
 
-        // Cart Badge
-        this.productCount = this.selectedProductsList.length;
-        if (this.productCount === 0) {
-            this.buttonDisable = true;
-            this.showBadge = false;
+        const res = await LightningConfirm.open({
+            label: 'Confirm Deletion',
+            message: 'Would you like to remove this product?',
+            variant: 'header',
+            theme: 'error'
+        });
 
-            this.productQuantity = 0;
-            this.orderAmnt = '0';
-            this.orderTsub = '0';
-        } else {
-            this.productAmount = 0;
-            this.productQuantity = 0;
-            this.productSub = 0;
+        if (res) {
             for (var product of this.selectedProductsList) {
-                this.productAmount = Number.parseInt(this.productAmount) + ((product.ListPrice - (product.ListPrice * product.Discount / 100)) * product.Quantity);
-                this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
-                this.productSub = Number.parseInt(this.productSub) + (product.ListPrice * product.Quantity);
+                if (id[0] == product.Id) {
+                    const index = this.selectedProductsList.indexOf(product);
+                    this.selectedProductsList.splice(index, 1)
+                }
+            }
+            this.selectedItems = false;
+            this.selectedItems = true;
 
-                this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                this.orderTsub = this.productSub.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            // Cart Badge
+            this.productCount = this.selectedProductsList.length;
+            if (this.productCount === 0) {
+                this.buttonDisable = true;
+                this.showBadge = false;
+
+                this.productQuantity = 0;
+                this.orderAmnt = '0';
+                this.orderTsub = '0';
+            } else {
+                this.productAmount = 0;
+                this.productQuantity = 0;
+                this.productSub = 0;
+                for (var product of this.selectedProductsList) {
+                    this.productAmount = Number.parseInt(this.productAmount) + ((product.ListPrice - (product.ListPrice * product.Discount / 100)) * product.Quantity);
+                    this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
+                    this.productSub = Number.parseInt(this.productSub) + (product.ListPrice * product.Quantity);
+
+                    this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                    this.orderTsub = this.productSub.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
             }
         }
     }
@@ -300,40 +314,5 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
     @api
     closeSelectedItem(event) {
         this.orderedModal = false;
-    }
-
-    @api
-    changeModal(event) {
-        if (this.recordId) {
-            console.log('Generate Summary');
-            getOrd({ recordId: this.recordId })
-                .then(result => {
-                    console.log('Get Order Details');
-                    this.data = result;
-                    this.errorO = undefined;
-                    console.log(this.data);
-                })
-                .catch((error) => {
-                    this.errorO = error;
-                });
-            getItems({ recordId: this.recordId })
-                .then(result => {
-                    console.log('Get Product Details');
-                    this.data2 = result;
-                    this.errorP = undefined;
-                    console.log(this.data2);
-                })
-                .catch((error) => {
-                    this.errorP = error;
-                });
-            this.showModal = true;
-        }
-
-
-    }
-
-    @api
-    closeModal(event) {
-        this.showModal = false;
     }
 }
