@@ -53,12 +53,13 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
 
     // Reset Button
     reset(event) {
-        const inputFields = this.template.querySelectorAll('lightning-input-field');
+        eval("$A.get('e.force:refreshView').fire();");
+        /*const inputFields = this.template.querySelectorAll('lightning-input-field');
         if (inputFields) {
             inputFields.forEach((field) => {
                 field.reset();
             });
-        }
+        }*/
     }
 
     // Radio Button
@@ -67,7 +68,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
             { label: 'Search Category', value: 'Name' },
             { label: 'Product Name', value: 'Name' },
             { label: 'Product Brand', value: 'Brand__c' },
-            { label: 'MRP', value: 'UnitPrice' }
+            { label: 'Product Code', value: 'ProductCode' }
         ];
     }
 
@@ -96,8 +97,24 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         this.disBtn = true;
     }
 
-    cancelOrder(event) {
-        eval("$A.get('e.force:refreshView').fire();");
+    async cancelOrder(event) {
+        const res = await LightningConfirm.open({
+            label: 'Confirm Order Cancellation',
+            message: 'Would you like to cancel this order?',
+            variant: 'header',
+            theme: 'error'
+        });
+
+        if (res) {
+            eval("$A.get('e.force:refreshView').fire();");
+            this[NavigationMixin.Navigate]({
+                type: 'standard__objectPage',
+                attributes: {
+                    objectApiName: 'Order',
+                    actionName: 'home'
+                }
+            })
+        }
     }
 
     //  Searching Products
@@ -156,10 +173,13 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
 
                     this.productAmount = Number.parseInt(this.productAmount) + Number.parseInt(product.ListPrice);
+                    this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
                     break;
                 }
             }
             this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            this.orderTsub = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            this.productQuantity = this.selectedProductsList.length;
             if (!this.selectedProductsList.some(prod => prod.Id === selectedProduct.Id)) {
                 this.selectedProductsList.push(selectedProduct);
             }
@@ -258,52 +278,65 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
-    saveOrderProducts(event) {
-        var inputCmp = this.template.querySelector('.inputCmp');
-        var value = inputCmp.value;
+    async saveOrderProducts(event) {
+        var id = [];
+        id.push(event.target.value)
+        console.log(id[0]);
 
-        if (value > 0) {
-            console.log('No Field Error found')
-            inputCmp.setCustomValidity('');
-            if (this.selectedProductsList)
-                this.selectedItems = false;
+        const res = await LightningConfirm.open({
+            label: 'Are you sure?',
+            message: 'Would you like to checkout this order?',
+            variant: 'header',
+            theme: 'inverse'
+        });
 
-            for (var product of this.selectedProductsList) {
-                product.UnitPrice = product.ListPrice - (product.ListPrice * product.Discount / 100);
-            }
+        if (res) {
+            var inputCmp = this.template.querySelector('.inputCmp');
+            var value = inputCmp.value;
 
-            createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: '01s5i0000089CzGAAU', orderId: this.recordId })
-                .then(result => {
-                    console.log('Order Id : ' + result);
-                })
-                .catch(error => {
-                    console.log(error);
-                });
-            this.summary = true;
-            //toast
-            if (this.result !== 'Error') {
-                event = new ShowToastEvent({
-                    title: 'Success!',
-                    message: 'Product Created',
-                    variant: 'Success'
-                });
-                this.dispatchEvent(event);
-                setTimeout(() => {
-                    eval("$A.get('e.force:refreshView').fire();");
-                    this[NavigationMixin.Navigate]({
-                        type: 'standard__recordPage',
-                        attributes: {
-                            recordId: this.recordId,
-                            objectApiName: 'Order',
-                            actionName: 'view'
-                        }
+            if (value > 0) {
+                console.log('No Field Error found')
+                inputCmp.setCustomValidity('');
+                if (this.selectedProductsList)
+                    this.selectedItems = false;
+
+                for (var product of this.selectedProductsList) {
+                    product.UnitPrice = product.ListPrice - (product.ListPrice * product.Discount / 100);
+                }
+
+                createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: '01s5i0000089CzGAAU', orderId: this.recordId })
+                    .then(result => {
+                        console.log('Order Id : ' + result);
                     })
-                }, 1500);
+                    .catch(error => {
+                        console.log(error);
+                    });
+                this.summary = true;
+                //toast
+                if (this.result !== 'Error') {
+                    event = new ShowToastEvent({
+                        title: 'Success!',
+                        message: 'Product Created',
+                        variant: 'Success'
+                    });
+                    this.dispatchEvent(event);
+                    setTimeout(() => {
+                        eval("$A.get('e.force:refreshView').fire();");
+                        this[NavigationMixin.Navigate]({
+                            type: 'standard__recordPage',
+                            attributes: {
+                                recordId: this.recordId,
+                                objectApiName: 'Order',
+                                actionName: 'view'
+                            }
+                        })
+                    }, 1500);
+                }
+            } else {
+                inputCmp.setCustomValidity('');
             }
-        } else {
-            inputCmp.setCustomValidity('');
+            inputCmp.reportValidity();
         }
-        inputCmp.reportValidity();
     }
 
     @api

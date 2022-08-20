@@ -61,7 +61,8 @@
 }
 
 :host .parentClass,
-:host .tableEditor {
+:host .tableEditor,
+:host .redBorder {
     --slds-c-button-text-destructive-color-border: #ea001e;
 }
 
@@ -103,6 +104,10 @@
     margin: 20px;
 }
 
+.orderHeader {
+    margin: 20px 20px 0 20px;
+}
+
 .orderPanel th,
 td {
     background-color: white;
@@ -129,7 +134,7 @@ td {
     top: 0;
     z-index: 2;
     color: black;
-    height: 50px;
+    height: 30px;
 }
 
 hr {
@@ -137,9 +142,20 @@ hr {
     margin: 0;
 }
 
+.leftPanel {
+    height: 50vh;
+    overflow: hidden;
+}
+
 .rightPanel {
     height: 50vh;
     padding: 20px;
     background-color: #f3f3f3;
     border-radius: 5px;
+    position: relative;
+}
+
+.orderCheckout {
+    position: absolute;
+    bottom: 10px;
 }
