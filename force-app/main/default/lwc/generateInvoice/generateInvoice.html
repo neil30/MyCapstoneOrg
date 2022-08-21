@@ -1,0 +1,116 @@
+<template>
+    <lightning-card title="Order Invoice" icon-name="utility:contract_payment">
+        <p class="slds-p-horizontal_small">
+            <lightning-button variant="brand" label="View" onclick={showInvoice}></lightning-button>
+        </p>
+    </lightning-card>
+
+    <template if:true={viewInvoice}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Order Invoice</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <img src={cartImage} alt="" style="height: 70px;">
+                    <br>
+                    <br>
+                    <template for:each={orderInfo} for:item='d'>
+                        <div key={d.Id} class="slds-grid">
+                            <div class="slds-col slds-size_3-of-5">
+                                <div class="slds-text-body_regular"><b>Account Name: {d.Account.Name}</b></div>
+                                <div class="slds-text-body_regular">Account Phone: {d.Account.Phone}</div>
+                            </div>
+                            <div class="slds-col slds-size_2-of-5">
+                                <div class="slds-text-body_regular"><b>Order Number: {d.OrderNumber}</b></div>
+                                <div class="slds-text-body_regular">Start Date: {d.EffectiveDate}</div>
+                            </div>
+                        </div>
+                    </template>
+                    <br>
+                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                        <thead>
+                            <tr class="slds-line-height_reset">
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">
+                                        Product Code
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">
+                                        Product Name
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">
+                                        Brand
+                                    </div>
+                                </th>
+                                <th class="" scope="col">
+                                    <div class="slds-truncate">
+                                        Quantity
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={orderItems} for:item='d2'>
+                                <tr class="slds-hint-parent" key={d2.Id}>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" value={d2.Product2.ProductCode} readonly>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" value={d2.Product2.Name} readonly>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="text" value={d2.Product2.Brand__c} readonly>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="slds-truncate">
+                                            <lightning-input type="number" value={d2.Quantity} readonly>
+                                            </lightning-input>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                    <br>
+                    <br>
+                    <template for:each={orderInfo} for:item='d'>
+                        <div key={d.Id} class="slds-grid">
+                            <div class="slds-col slds-size_3-of-5"></div>
+                            <div class="slds-col slds-size_2-of-5">
+                                <div class="slds-text-body_regular">Subtotal: {d.SubTotal__c}</div>
+                                <div class="slds-text-body_regular">Discount: {d.Discount_Amount__c}</div>
+                                <div class="slds-text-body_regular"><b>Total Amount: {d.TotalAmount}</b></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+                <div class="slds-modal__footer">
+                    <button class="slds-button slds-button_neutral" onclick={hideInvoice}
+                        aria-label="Cancel and close">Cancel</button>
+                    <button class="slds-button slds-button_brand" onclick={createPdf}>Save</button>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>
