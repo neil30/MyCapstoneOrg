@@ -15,8 +15,9 @@
                                 <lightning-input-field disabled="true" field-name="Status"></lightning-input-field>
                                 <lightning-input-field disabled="true" field-name="Stage__c"></lightning-input-field>
                                 <br>
-                                <lightning-button disabled={disBtn} variant="brand" icon-name="utility:record_create"
-                                    type="submit" onclick={getOrderAccName} label="Add Order">
+                                <lightning-button class="myBrand" disabled={disBtn} variant="brand"
+                                    icon-name="utility:record_create" type="submit" onclick={getOrderAccName}
+                                    label="Add Order">
                                 </lightning-button>
                                 &nbsp;&nbsp;
                                 <lightning-button disabled={disBtn} variant="destructive-text"
@@ -136,7 +137,7 @@
                                                             <td>
                                                                 <div class="slds-truncate">
                                                                     <!-- Add Item Button to Select Products -->
-                                                                    <lightning-button label="Add Item" variant="brand"
+                                                                    <lightning-button class="myBrand" label="Add Item" variant="brand"
                                                                         value={product.Id} onclick={addProduct}>
                                                                     </lightning-button>
                                                                 </div>
@@ -205,21 +206,21 @@
                                                 <thead>
                                                     <tr class="slds-line-height_reset">
                                                         <th class="" scope="col">
-                                                            <div class="slds-truncate slds-text-align_center">Product
-                                                                Info
+                                                            <div class="slds-truncate">
+                                                                Product Info
                                                             </div>
                                                         </th>
                                                         <th class="" scope="col">
-                                                            <div class="slds-truncate slds-text-align_center">Quantity
+                                                            <div class="slds-truncate">Quantity
                                                             </div>
                                                         </th>
                                                         <th class="" scope="col">
-                                                            <div class="slds-truncate slds-text-align_center">
+                                                            <div class="slds-truncate">
                                                                 Discount(%)
                                                             </div>
                                                         </th>
                                                         <th class="" scope="col">
-                                                            <div class="slds-truncate slds-text-align_center">Action
+                                                            <div class="slds-truncate">Action
                                                             </div>
                                                         </th>
                                                     </tr>
@@ -269,7 +270,7 @@
                                                             </td>
                                                             <td>
                                                                 <div class="slds-truncate">
-                                                                    <lightning-button label="Remove"
+                                                                    <lightning-button class="myBrand" label="Remove"
                                                                         variant="destructive" value={product.Id}
                                                                         onclick={removeProduct}
                                                                         icon-name="utility:delete" icon-position="left">
@@ -346,7 +347,7 @@
                                     <div class="slds-grid">
                                         <div class="slds-col slds-size_1-of-2">
                                             <div>
-                                                Order Quantity:
+                                                Product Quantity:
                                             </div>
                                         </div>
                                         <div class="slds-col">
@@ -384,7 +385,7 @@
                                         <div class="orderCheckout">
                                             <lightning-button variant="brand" label="Checkout Order"
                                                 title="Proceed to checkout now." icon-name="utility:checkout"
-                                                class="slds-button_stretch" onclick={saveOrderProducts}
+                                                class="slds-button_stretch myBrand" onclick={saveOrderProducts}
                                                 style="display: grid; width: 100%"></lightning-button>
                                         </div>
                                     </div>

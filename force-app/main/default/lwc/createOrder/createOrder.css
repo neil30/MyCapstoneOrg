@@ -63,7 +63,12 @@
 :host .parentClass,
 :host .tableEditor,
 :host .redBorder {
-    --slds-c-button-text-destructive-color-border: #ea001e;
+    --slds-c-button-text-destructive-color-border: #c92929;
+}
+
+.myBrand {
+    --slds-c-button-destructive-color-background: #c92929;
+    --slds-c-button-brand-color-background: #0e884b;
 }
 
 .tableClass {
@@ -150,7 +155,7 @@ hr {
 .rightPanel {
     height: 50vh;
     padding: 20px;
-    background-color: #f3f3f3;
+    background-color: #ddebe9;
     border-radius: 5px;
     position: relative;
 }

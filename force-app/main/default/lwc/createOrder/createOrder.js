@@ -287,7 +287,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
             label: 'Are you sure?',
             message: 'Would you like to checkout this order?',
             variant: 'header',
-            theme: 'inverse'
+            theme: 'success'
         });
 
         if (res) {
