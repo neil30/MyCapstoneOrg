@@ -4,10 +4,12 @@ import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import pdflib from '@salesforce/resourceUrl/pdflib';
 import cartLogo from '@salesforce/resourceUrl/OrgLogo';
 import getOrder from '@salesforce/apex/GenerateInvoice.getOrderDetails';
-import getItems from '@salesforce/apex/OrderController.getProdDetails';
+import getItems from '@salesforce/apex/GenerateInvoice.getProdDetails';
+import getInvoice from '@salesforce/apex/GenerateInvoice.getInvoiceId';
 
 export default class GenerateInvoice extends LightningElement {
 
+    invoiceId;
     @api recordId;
     @track orderInfo;
     @track orderItems;
@@ -38,6 +40,15 @@ export default class GenerateInvoice extends LightningElement {
             .then(result => {
                 console.log(result);
                 this.orderItems = result;
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
+        getInvoice({ recordId: this.recordId })
+            .then(result => {
+                console.log(result);
+                this.invoiceId = result;
             })
             .catch((error) => {
                 console.log(error);
@@ -117,6 +128,14 @@ export default class GenerateInvoice extends LightningElement {
             y: page.getHeight() - 215,
             size: fontSize,
             font: timesRomanFont,
+        })
+
+        page.drawText('Invoice Number: ' + this.invoiceId, {
+            x: 380,
+            y: page.getHeight() - 175,
+            size: fontSize,
+            font: timesRomanFontBold,
+            color: PDFLib.rgb(0.95, 0.1, 0.1),
         })
 
         page.drawText('Order Number: ' + this.ordNumber, {
@@ -219,7 +238,7 @@ export default class GenerateInvoice extends LightningElement {
         })
 
         const pdfBytes = await pdfDoc.save();
-        this.saveByteArray("INV - " + this.ordNumber, pdfBytes);
+        this.saveByteArray(this.invoiceId, pdfBytes);
     }
 
     saveByteArray(pdfName, byte) {

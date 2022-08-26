@@ -6,45 +6,33 @@ import getProducts from '@salesforce/apex/OrderController.getProducts';
 import createOrderProducts from '@salesforce/apex/OrderController.createOrderProducts';
 import LightningConfirm from 'lightning/confirm';
 
-const columns = [
-    { label: 'Order Id', fieldname: 'Id', type: 'text' },
-    { label: 'Order Amount', field: 'TotalAmount', type: 'currency' },
-    { label: 'Total Quantity', field: 'TotalQty__c', type: 'number' },
-];
-
-const columns2 = [
-    { label: 'Product Name', fieldname: 'Product2.Name', type: 'text' },
-    { label: 'Product Code', fieldname: 'Product2.ProductCode', type: 'text' },
-    { label: 'Brand', fieldname: 'Product2.Brand__c', type: 'text' },
-    { label: 'Stock Quantity', fieldname: 'Product2.Stock_Quantity__c', type: 'number' },
-    { label: 'Quantity', fieldname: 'Product2.Quantity', type: 'number' },
-];
-
 export default class CreateOrder extends NavigationMixin(LightningElement) {
+    // Necessary Id
     recordId = '';
+    priceBook = '01s5i0000089CzGAAU';
+
+    // Booleans
     orderCreated = false;
     displayList = false;
     selectedItems = true;
     showBadge = false;
-    summary = false;
     disableCancel = true;
     disBtn = false;
+    showModal = false;
+    orderedModal = false;
+
+    // Arrays
     productList;
-    desiredQuantity = 0;
-    error;
     selectedProductsList = [];
-    @track value = 'Name';
-    @api showModal = false;
-    @api orderedModal = false;
-    @track data;
-    @track columns = columns;
-    @track columns2 = columns2;
-    @track errorO;
-    @track errorP;
-    @track buttonDisable = true;
-    @track productCount = 0;
+
+    error;
     myDate = new Date().toISOString().slice(0, 10);
 
+    @track value = 'Name';
+    @track buttonDisable = true;
+    @track productCount = 0;
+
+    // For
     productAmount = 0;
     productQuantity = 0;
     productSub = 0;
@@ -122,17 +110,14 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         var searchValue = event.target.value;
         console.log(this.value);
         if (searchValue.length > 0) {
-            getProducts({ searchBy: this.value, searchText: searchValue, pbId: '01s5i0000089CzGAAU' })
+            getProducts({ searchBy: this.value, searchText: searchValue, pbId: this.priceBook })
                 .then(result => {
                     console.log(result);
-                    console.log('inside get products success 1');
                     this.productList = JSON.parse(result);
-                    console.log('inside get products success 2');
                     this.displayList = true;
                     console.log(this.productList);
                 })
                 .catch(error => {
-                    console.log('inside get products error');
                     this.error = error;
                     console.log(error);
                 });
@@ -151,8 +136,6 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                 mode: 'dismissable'
             });
             this.dispatchEvent(event);
-        } else if (this.desiredQuantity < 0) {
-            alert('Please enter a valid value');
         } else {
             this.selectedItems = false;
             var pId = event.target.value;
@@ -173,13 +156,13 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
 
                     this.productAmount = Number.parseInt(this.productAmount) + Number.parseInt(product.ListPrice);
-                    this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
+                    //this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
                     break;
                 }
             }
             this.orderAmnt = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             this.orderTsub = this.productAmount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            this.productQuantity = this.selectedProductsList.length;
+            this.productQuantity = this.selectedProductsList.length+1;
             if (!this.selectedProductsList.some(prod => prod.Id === selectedProduct.Id)) {
                 this.selectedProductsList.push(selectedProduct);
             }
@@ -193,6 +176,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
+    // Remove Product
     async removeProduct(event) {
         var id = [];
         id.push(event.target.value)
@@ -220,6 +204,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
             if (this.productCount === 0) {
                 this.buttonDisable = true;
                 this.showBadge = false;
+                this.orderedModal = false;
 
                 this.productQuantity = 0;
                 this.orderAmnt = '0';
@@ -240,6 +225,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
+    // Get Quantity field value
     updateQuantity(event) {
         var index = -1;
         for (var product of this.selectedProductsList) {
@@ -262,6 +248,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
+    // Get Discount field value
     updateDiscount(event) {
         var index = -1;
         for (var product of this.selectedProductsList) {
@@ -278,6 +265,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
+    // Save Products to Order
     async saveOrderProducts(event) {
         var id = [];
         id.push(event.target.value)
@@ -304,15 +292,14 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     product.UnitPrice = product.ListPrice - (product.ListPrice * product.Discount / 100);
                 }
 
-                createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: '01s5i0000089CzGAAU', orderId: this.recordId })
+                createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: this.priceBook, orderId: this.recordId })
                     .then(result => {
                         console.log('Order Id : ' + result);
                     })
                     .catch(error => {
                         console.log(error);
                     });
-                this.summary = true;
-                //toast
+                // Show Toast
                 if (this.result !== 'Error') {
                     event = new ShowToastEvent({
                         title: 'Success!',
@@ -339,12 +326,10 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
         }
     }
 
-    @api
     viewSelectedItem(event) {
         this.orderedModal = true;
     }
 
-    @api
     closeSelectedItem(event) {
         this.orderedModal = false;
     }
