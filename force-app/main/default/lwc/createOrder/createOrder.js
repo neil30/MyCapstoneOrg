@@ -2,14 +2,13 @@ import { LightningElement, track, api, wire } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { NavigationMixin } from 'lightning/navigation';
 import getRecordId from '@salesforce/apex/OrderController.getRecordId';
-import getProducts from '@salesforce/apex/OrderController.getProducts';
+import searchProduct from '@salesforce/apex/OrderController.searchProducts';
 import createOrderProducts from '@salesforce/apex/OrderController.createOrderProducts';
 import LightningConfirm from 'lightning/confirm';
 
 export default class CreateOrder extends NavigationMixin(LightningElement) {
     // Necessary Id
     recordId = '';
-    priceBook = '01s5i0000089CzGAAU';
 
     // Booleans
     orderCreated = false;
@@ -106,11 +105,11 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
     }
 
     //  Searching Products
-    searchProducts(event) {
+    productSearch(event) {
         var searchValue = event.target.value;
         console.log(this.value);
         if (searchValue.length > 0) {
-            getProducts({ searchBy: this.value, searchText: searchValue, pbId: this.priceBook })
+            searchProduct({ searchBy: this.value, searchText: searchValue})
                 .then(result => {
                     console.log(result);
                     this.productList = JSON.parse(result);
@@ -156,7 +155,6 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
 
                     this.productAmount = Number.parseInt(this.productAmount) + Number.parseInt(product.ListPrice);
-                    //this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
                     break;
                 }
             }
@@ -292,7 +290,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     product.UnitPrice = product.ListPrice - (product.ListPrice * product.Discount / 100);
                 }
 
-                createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), priceBookId: this.priceBook, orderId: this.recordId })
+                createOrderProducts({ selectedProducts: JSON.stringify(this.selectedProductsList), orderId: this.recordId })
                     .then(result => {
                         console.log('Order Id : ' + result);
                     })
