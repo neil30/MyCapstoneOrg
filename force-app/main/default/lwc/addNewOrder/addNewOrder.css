@@ -1,0 +1,108 @@
+.parentDiv {
+    min-height: 50vh;
+    margin: 10px 20px 5px 20px;
+}
+
+.mainModal {
+    overflow: hidden;
+}
+
+.noDataText {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    text-align: center;
+}
+
+.tableClass {
+    max-height: 35vh;
+    min-height: 35vh;
+    position: relative;
+}
+
+.tableFixHead {
+    overflow: auto;
+    height: 35vh;
+}
+
+.tableFixHead table {
+    border-collapse: inherit;
+    width: 100%;
+}
+
+.tableFixHead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: black;
+    height: 30px;
+}
+
+.tableFixHead td {
+    background: #f9f9f9;
+}
+
+.tableClass {
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.badgeParent {
+    padding: 10px 0
+}
+
+.badgeLayout {
+    display: inline-flex;
+    padding: 2px 0
+}
+
+.badgeItems {
+    margin: 0 3px;
+}
+
+.modalTableFixed {
+    overflow: auto;
+    height: 40vh;
+}
+
+.modalTableFixed table {
+    border-collapse: inherit;
+    width: 100%;
+}
+
+.modalTableFixed th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    color: black;
+    height: 30px;
+}
+
+.orderPanel {
+    margin: 20px;
+}
+
+.orderHeader {
+    margin: 20px 20px 0 20px;
+}
+
+.orderPanel th,
+td {
+    background-color: white;
+}
+
+.leftPanel {
+    height: 40vh;
+    overflow: hidden;
+}
+
+.rightPanel {
+    padding: 20px;
+    background-color: #ddebe9;
+    border-radius: 5px;
+    position: relative;
+}
+
+.orderDetails {
+    padding: 50px;
+}

@@ -1,0 +1,557 @@
+<template>
+    <article class="slds-card">
+        <div class="slds-card__header slds-grid">
+            <header class="slds-media slds-media_center slds-has-flexi-truncate">
+                <div class="slds-media__figure">
+                    <span class="slds-icon_container slds-icon-standard-account" title="Create new order">
+                        <svg class="slds-icon slds-icon_small" aria-hidden="true">
+                            <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#order"></use>
+                        </svg>
+                        <span class="slds-assistive-text">Orders</span>
+                    </span>
+                </div>
+                <div class="slds-media__body">
+                    <h2 class="slds-card__header-title">
+                        <a href="#" class="slds-card__header-link slds-truncate" title="Accounts">
+                            <span>Order</span>
+                        </a>
+                    </h2>
+                </div>
+                <div class="slds-no-flex">
+                    <button onclick={showOrderPane} class="slds-button slds-button_neutral">New</button>
+                </div>
+            </header>
+        </div>
+    </article>
+    <template if:true={newOrder}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="modal-heading-01"
+            class="slds-modal slds-fade-in-open slds-modal_medium">
+            <div class="slds-modal__container">
+                <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse">
+                    <svg class="slds-button__icon slds-button__icon_large" aria-hidden="true">
+                        <use xlink:href="/assets/icons/utility-sprite/svg/symbols.svg#close"></use>
+                    </svg>
+                    <span class="slds-assistive-text">Cancel and close</span>
+                </button>
+                <div class="slds-modal__header">
+                    <h1 id="modal-heading-01" class="slds-modal__title slds-hyphenate">Create New Order</h1>
+                </div>
+                <div class="slds-modal__content slds-p-around_medium mainModal" id="modal-content-id-1">
+                    <div class="parentDiv">
+                        <div class="slds-grid">
+                            <div class="slds-col slds-size_2-of-2">
+                                <lightning-progress-indicator current-step={orderProgress} type="base" variant="base">
+                                    <lightning-progress-step label="Step 1" value="1"></lightning-progress-step>
+                                    <lightning-progress-step label="Step 2" value="2"></lightning-progress-step>
+                                    <lightning-progress-step label="Step 3" value="3"></lightning-progress-step>
+                                    <lightning-progress-step label="Step 4" value="4"></lightning-progress-step>
+                                </lightning-progress-indicator>
+                            </div>
+                        </div>
+
+                        <br>
+                        <!-- First step starts here -->
+                        <template if:true={contentOne}>
+                            <div class="slds-grid slds-gutters">
+                                <div class="slds-col slds-size_2-of-5">
+                                    <lightning-input type="search" label="" variant="label-hidden"
+                                        placeholder="Search products here..." onchange={productSearch}>
+                                    </lightning-input>
+                                </div>
+                                <div class="slds-col slds-size_1-of-5">
+                                    <lightning-combobox name="progress" label="" variant="label-hidden"
+                                        value={categoryValue} placeholder="Select Category" options={searchOptions}
+                                        onchange={searchChange} title="Search products by category">
+                                    </lightning-combobox>
+                                </div>
+                                <div class="slds-col slds-size_2-of-5">
+                                    <div class="slds-grid slds-gutters">
+                                        <div class="slds-col slds-size_1-of-5"></div>
+                                        <div class="slds-col slds-size_2-of-5">
+                                            <lightning-combobox disabled={rangeDisable} name="progress" label=""
+                                                variant="label-hidden" value={priceValue} placeholder="Range"
+                                                options={priceOptions} onchange={rangeChange}
+                                                title="Search products by category">
+                                            </lightning-combobox>
+                                        </div>
+                                        <div class="slds-col slds-size_2-of-5">
+                                            <lightning-combobox disabled={sortDisable} name="progress" label=""
+                                                variant="label-hidden" value={sortValue} placeholder="Sort By"
+                                                options={sortOptions} onchange={sortChange}
+                                                title="Search products by category">
+                                            </lightning-combobox>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="badgeParent">
+                                <template if:true={selectedItems}>
+                                    <template for:each={selectedProductsList} for:item="product">
+                                        <div class="badgeLayout" key={product.Id}>
+                                            <div class="badgeItems">
+                                                <lightning-button-icon value={product.Id} onclick={removeItem}
+                                                    icon-name="utility:close" variant="bare"
+                                                    alternative-text="Remove this item." title="Remove Item">
+                                                </lightning-button-icon>
+                                                <lightning-badge onclick={removeItem} label={product.Name}
+                                                    icon-name="utility:price_book_entries">
+                                                </lightning-badge>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </template>
+                            </div>
+
+                            <div class="tableClass">
+                                <div class="tableFixHead">
+                                    <!--Table for Product List Search Result -->
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <!-- Table Header -->
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Product Code</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Product Name</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Brand</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">MRP</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">In Stock</div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Action</div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <!-- Display Table Body if Data != NULL -->
+                                        <template if:true={displayList}>
+                                            <tbody>
+                                                <!-- Iterate all collected data from the list -->
+                                                <template if:true={productItem}>
+                                                    <template for:each={productItem} for:item="product">
+                                                        <tr class="slds-hint-parent" key={product.Id}>
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <div style="width: 50px; max-width: 50px;">
+                                                                        {product.ProductCode}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <div style="width: 180px; max-width: 180px;">
+                                                                        {product.Name}
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate">{product.Brand__c}</div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate">{product.ListPrice}</div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate">{product.Stock_Quantity__c}
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="slds-truncate">
+                                                                    <!-- Add Item Button to Select Products -->
+                                                                    <lightning-button class="myBrand" label="Add Item"
+                                                                        variant="brand" value={product.Id}
+                                                                        onclick={addItem}>
+                                                                    </lightning-button>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </template>
+                                                </template>
+                                            </tbody>
+                                        </template>
+                                    </table>
+                                    <template if:false={displayList}>
+                                        <div class="noDataText">
+                                            <div class="textContent">
+                                                <h1>No data to show</h1>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <br>
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_4-of-5"></div>
+                                <div class="slds-col slds-size_1-of-5">
+                                    <div class="slds-grid">
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-text-body_regular">Cart Items:
+                                            </div>
+                                            <div class="slds-text-body_regular"><b>Total Amount:</b>
+                                            </div>
+                                        </div>
+
+                                        <div class="slds-col slds-size_1-of-2">
+                                            <div class="slds-clearfix">
+                                                <div class="slds-float_right">
+                                                    <div class="slds-text-body_regular"> {productCount}
+                                                    </div>
+                                                    <div class="slds-text-body_regular"><b> {orderTsub}</b>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Second step starts here -->
+                        <template if:true={contentTwo}>
+                            <template if:true={selectedProductsList}>
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-size_9-of-12">
+                                        <div class="slds-text-heading_medium"><b>Selected Product List</b></div>
+                                    </div>
+                                    <div class="slds-col slds-size_3-of-12">
+                                        <div class="slds-clearfix">
+                                            <div class="slds-float_right">
+                                                <div class="slds-text-heading_medium"><b>Cart Items: {productCount}</b>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="modalTableFixed">
+                                    <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                        <thead>
+                                            <tr class="slds-line-height_reset">
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">
+                                                        Product Info
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">
+                                                        Brand
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">In Stock
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Quantity
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">
+                                                        Discount(%)
+                                                    </div>
+                                                </th>
+                                                <th class="" scope="col">
+                                                    <div class="slds-truncate">Action
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <template for:each={selectedProductsList} for:item="product">
+                                                <tr class="slds-hint-parent" key={product.Id}>
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <div style="width: 150px; max-width: 150px;">
+                                                                <div>
+                                                                    {product.Name}
+                                                                </div>
+                                                                <div>
+                                                                    {product.ProductCode}
+                                                                </div>
+                                                                <div>
+                                                                    MRP: {product.ListPrice}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <div style="width: 80px; max-width: 80px;">
+                                                                <div>
+                                                                    {product.Brand__c}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <div style="width: 80px; max-width: 80px;">
+                                                                <div>
+                                                                    {product.Stock_Quantity__c}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" style="width: 90px;">
+                                                            <lightning-input style="width: 80px;" class="inputCmp"
+                                                                type="number" min="1" max={product.Stock_Quantity__c}
+                                                                variant="label-hidden" name={product.Id}
+                                                                value={product.Quantity} onchange={updateQuantity}
+                                                                message-when-range-underflow="Invalid Quantity"
+                                                                message-when-range-overflow="Invalid Quantity" required>
+                                                            </lightning-input>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate" style="width: 90px;">
+                                                            <lightning-input style="width: 80px;" type="number" min="0"
+                                                                max="100" variant="label-hidden" name={product.Id}
+                                                                value={product.Discount} onchange={updateDiscount}
+                                                                message-when-range-overflow="Invalid Discount" required>
+                                                            </lightning-input>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="slds-truncate">
+                                                            <lightning-button class="myBrand" label="Remove"
+                                                                variant="destructive" value={product.Id}
+                                                                onclick={removeItem} icon-name="utility:delete"
+                                                                icon-position="left">
+                                                            </lightning-button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </template>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </template>
+                        </template>
+
+                        <!-- Third step starts here -->
+                        <template if:true={contentThree}>
+                            <div class="orderHeader">
+                                <div class="slds-text-heading_medium"><b>Confirm Order</b></div>
+                            </div>
+
+                            <div class="slds-grid">
+                                <div class="slds-col slds-size_8-of-12">
+                                    <div class="leftPanel">
+                                        <div class="orderPanel">
+                                            <template if:true={selectedProductsList}>
+                                                <div class="modalTableFixed">
+                                                    <table
+                                                        class="slds-table slds-table_cell-buffer slds-table_bordered">
+                                                        <thead>
+                                                            <tr class="slds-line-height_reset">
+                                                                <th class="" scope="col">
+                                                                    <div class="slds-truncate">
+                                                                        Product Info
+                                                                    </div>
+                                                                </th>
+                                                                <th class="" scope="col">
+                                                                    <div class="slds-truncate">Quantity
+                                                                    </div>
+                                                                </th>
+                                                                <th class="" scope="col">
+                                                                    <div class="slds-truncate">
+                                                                        Discount(%)
+                                                                    </div>
+                                                                </th>
+                                                                <th class="" scope="col">
+                                                                    <div class="slds-truncate">
+                                                                        Total Price
+                                                                    </div>
+                                                                </th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <template for:each={selectedProductsList}
+                                                                for:item="product">
+                                                                <tr class="slds-hint-parent" key={product.Id}>
+                                                                    <td>
+                                                                        <div class="slds-truncate">
+                                                                            <div
+                                                                                style="width: 180px; max-width: 180px;">
+                                                                                <div>
+                                                                                    {product.Name}
+                                                                                </div>
+                                                                                <div>
+                                                                                    {product.ProductCode}
+                                                                                </div>
+                                                                                <div>
+                                                                                    {product.Brand__c}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="slds-truncate" style="width: 90px;">
+                                                                            <lightning-input style="width: 80px;"
+                                                                                variant="label-hidden" name={product.Id}
+                                                                                value={product.Quantity} readonly>
+                                                                            </lightning-input>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="slds-truncate" style="width: 90px;">
+                                                                            <lightning-input style="width: 80px;"
+                                                                                type="number" variant="label-hidden"
+                                                                                name={product.Id}
+                                                                                value={product.Discount} readonly>
+                                                                            </lightning-input>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="slds-truncate">
+                                                                            <div style="width: 90px; max-width: 90px;">
+                                                                                <div>
+                                                                                    {product.TotalPrice}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            </template>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </template>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="slds-col slds-size_4-of-12">
+                                    <div class="orderPanel">
+                                        <div class="rightPanel">
+                                            <div class="slds-text-heading_regular"><b>Order Summary</b></div>
+                                            <br>
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <div>
+                                                        Product Quantity:
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col">
+                                                    <div class="slds-text-align_right">
+                                                        {productQuantity}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <div>
+                                                        Subtotal:
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col">
+                                                    <div class="slds-text-align_right">
+                                                        {orderTsub}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="slds-grid">
+                                                <div class="slds-col slds-size_1-of-2">
+                                                    <div class="slds-text-title_bold">
+                                                        Total Amount:
+                                                    </div>
+                                                </div>
+                                                <div class="slds-col">
+                                                    <div class="slds-text-align_right slds-text-title_bold">
+                                                        {orderAmnt}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Fourth step starts here -->
+                        <template if:true={contentFour}>
+                            <br>
+                            <div class="slds-align_absolute-center">
+                                <div>
+                                    <div class="slds-align_absolute-center">
+                                        <lightning-icon icon-name="action:approval" alternative-text="Approved"
+                                            title="Approved"></lightning-icon>
+                                    </div>
+                                    <div class="slds-align_absolute-center">
+                                        <div class="slds-text-heading_large">Order Created Successfully!</div>
+                                    </div>
+                                    <br>
+                                    <div class="slds-align_absolute-center">
+                                        <div class="slds-text-heading_medium">Your order <b>{orderNumber}</b> has been
+                                            placed!</div>
+                                    </div>
+                                    <br>
+                                    <div class="slds-align_absolute-center">
+                                        <div class="slds-text-heading_regular">We have sent an email to the Manager with
+                                            your order confirmation.</div>
+                                    </div>
+                                    <div class="slds-align_absolute-center">
+                                        <div class="slds-text-heading_regular">Order Date: {effectiveDate}</div>
+                                    </div>
+                                    <div class="slds-align_absolute-center">
+                                        <lightning-button variant="base" label="Click here to view order" title="Go to created order." onclick={goToOrder} class="slds-m-left_x-small"></lightning-button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="orderDetails">
+                                <div class="slds-grid">
+                                    <div class="slds-col slds-size_1-of-6"></div>
+                                    <div class="slds-col slds-size_2-of-6">
+                                        <div class="slds-text-heading_regular"><b>Shipping Address</b></div>
+                                        <lightning-record-view-form object-api-name="Account" record-id={recordId}>
+                                            <lightning-output-field variant="label-hidden" field-name="ShippingAddress">
+                                            </lightning-output-field>
+                                        </lightning-record-view-form>
+                                    </div>
+                                    <div class="slds-col slds-size_2-of-6">
+                                        <div class="slds-text-heading_regular"><b>Billing Address</b></div>
+                                        <lightning-record-view-form object-api-name="Account" record-id={recordId}>
+                                            <lightning-output-field variant="label-hidden" field-name="BillingAddress">
+                                            </lightning-output-field>
+                                        </lightning-record-view-form>
+                                    </div>
+                                    <div class="slds-col slds-size_1-of-6"></div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+                <div class="slds-modal__footer">
+                    <template if:true={contentOne}>
+                        <button class="slds-button slds-button_neutral" onclick={hideOrderPane}
+                            aria-label="Cancel and close">Cancel</button>
+                        <button class="slds-button slds-button_brand" onclick={nextButton}>Next</button>
+                    </template>
+
+                    <template if:true={contentTwo}>
+                        <button class="slds-button slds-button_neutral" onclick={previousButton}
+                            aria-label="Cancel and close">Back to previous</button>
+                        <button class="slds-button slds-button_brand" onclick={nextButton}>Checkout Order</button>
+                    </template>
+
+                    <template if:true={contentThree}>
+                        <button class="slds-button slds-button_neutral" onclick={previousButton}
+                            aria-label="Cancel and close">Back to previous</button>
+                        <button class="slds-button slds-button_brand" onclick={placeOrder}>Place Order</button>
+                    </template>
+
+                    <template if:true={contentFour}>
+                        <button class="slds-button slds-button_brand" onclick={hideOrderPane}>Done</button>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open" role="presentation"></div>
+    </template>
+</template>

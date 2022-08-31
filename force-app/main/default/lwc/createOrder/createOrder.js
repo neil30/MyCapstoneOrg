@@ -155,6 +155,7 @@ export default class CreateOrder extends NavigationMixin(LightningElement) {
                     selectedProduct.PriceBookEntryId = product.PriceBookEntryId;
 
                     this.productAmount = Number.parseInt(this.productAmount) + Number.parseInt(product.ListPrice);
+                    //this.productQuantity = Number.parseInt(this.productQuantity) + Number.parseInt(product.Quantity);
                     break;
                 }
             }
